@@ -42,8 +42,8 @@ for _, service in ipairs(TARGET_SERVICES) do
             end
         end)
 
-        -- Every 150 parts, wait a tiny bit to prevent Xeno from crashing
-        if count % 150 == 0 then
+        -- Every 200 parts, wait a tiny bit to prevent Xeno from crashing
+        if count % 200 == 0 then
             task.wait() 
         end
     end
