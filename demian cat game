@@ -1,0 +1,52 @@
+local TEXTURE_ID = "rbxassetid://131435895767328"
+local FACES = {
+    Enum.NormalId.Top, Enum.NormalId.Bottom, 
+    Enum.NormalId.Left, Enum.NormalId.Right, 
+    Enum.NormalId.Front, Enum.NormalId.Back
+}
+
+-- Services that actually contain physical parts
+local TARGET_SERVICES = {
+    game:GetService("Workspace"),
+    game:GetService("ReplicatedStorage"),
+    game:GetService("SharedTableRegistry") -- Extra safety
+}
+
+local count = 0
+
+local function applyToPart(obj)
+    -- Apply textures to BaseParts
+    for _, face in ipairs(FACES) do
+        local tex = Instance.new("Texture")
+        tex.Texture = TEXTURE_ID
+        tex.Face = face
+        tex.Parent = obj
+    end
+    
+    -- Handle Mesh Data
+    if obj:IsA("MeshPart") then
+        obj.TextureID = TEXTURE_ID
+    elseif obj:FindFirstChildOfClass("SpecialMesh") then
+        obj:FindFirstChildOfClass("SpecialMesh").TextureID = TEXTURE_ID
+    end
+end
+
+print("Starting Optimized Texture Swap...")
+
+for _, service in ipairs(TARGET_SERVICES) do
+    for _, item in ipairs(service:GetDescendants()) do
+        pcall(function()
+            if item:IsA("BasePart") then
+                applyToPart(item)
+                count = count + 1
+            end
+        end)
+
+        -- Every 200 parts, wait a tiny bit to prevent Xeno from crashing
+        if count % 200 == 0 then
+            task.wait() 
+        end
+    end
+end
+
+print("Finished! Applied to " .. count .. " objects without exploding your PC.")
